@@ -38,5 +38,9 @@ object RetrofitInstance {
         retrofit.create(getOrdersApi::class.java)
     }
 
+    val postapi: PostApi by lazy {
+        retrofit.create(PostApi::class.java)
+    }
+
 }
 

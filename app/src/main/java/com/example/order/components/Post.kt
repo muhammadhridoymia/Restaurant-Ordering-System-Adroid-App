@@ -1,11 +1,7 @@
 package com.example.order.components
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
+import PostViewModel
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -19,48 +15,36 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import res
 
-
-
-// Data Model
-data class Post(
-    val id: Int,
-    val imageUrl: String,
-    val message: String,
-    val likes: Int,
-    val comments: Int
-)
 
 @Composable
 fun PostScreen() {
 
-    val demoPosts = listOf(
-        Post(
-            id = 1,
-            imageUrl = "https://images.unsplash.com/photo-1504674900247-0877df9cc836",
-            message = "Enjoying delicious food 🍕",
-            likes = 12,
-            comments = 4
-        ),
-        Post(
-            id = 2,
-            imageUrl = "https://images.unsplash.com/photo-1492724441997-5dc865305da7",
-            message = "Coffee time ☕",
-            likes = 8,
-            comments = 2
-        )
-    )
+    val postviewmodel: PostViewModel = viewModel()
+    val posts = postviewmodel.Postdata.value
+    val loading = postviewmodel.loading.value
 
-    Column {
-        demoPosts.forEach { post ->
-            PostCard(post)
+    LaunchedEffect(Unit) {
+        postviewmodel.fetchPosts()
+    }
+
+    if (loading) {
+        CircularProgressIndicator()
+    } else {
+        Column {
+            posts.forEach { post ->
+                PostCard(post)
+            }
         }
     }
-}
+    }
+
 
 @Composable
-fun PostCard(post: Post) {
+fun PostCard(post: res) {
 
     var likeCount by remember { mutableStateOf(post.likes) }
 
@@ -75,7 +59,7 @@ fun PostCard(post: Post) {
         Column {
 
             AsyncImage(
-                model = post.imageUrl,
+                model = post.image,
                 contentDescription = "Post Image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
